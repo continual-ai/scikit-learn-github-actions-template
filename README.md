@@ -1,1 +1,1 @@
-# continual-scikit-learn-github-actions-example
+# scikit-learn-github-actions-template
