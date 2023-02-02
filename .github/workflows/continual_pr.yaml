@@ -32,7 +32,7 @@ jobs:
           continual config show
       - name: Create Continual environment
         run: |
-          continual_environment_id="pr_$GITHUB_PR_NUMBER"
+          continual_environment_id="pr-$GITHUB_PR_NUMBER"
           create_result=$(continual environments create $continual_environment_id)
           echo "$create_result"
           if grep -q "Failed to create environment " <<< "$create_result"; then  
