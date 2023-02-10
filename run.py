@@ -13,7 +13,12 @@ accuracy_metric = model_version.metrics.create(id="accuracy", direction="HIGHER"
 accuracy_metric.log(value=0.8)
 
 model.promotions.create(
-	model_version=model_version.name, reason="UPLIFT"
+	model_version=model_version.name, 
+	reason="UPLIFT", 
+	improvement_metric="accuracy", 
+	improvement_metric_value=0.8, 
+	base_improvement_metric_value=0.7, 
+	improvement_metric_diff=0.1
 )
 
 run.complete()
