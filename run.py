@@ -6,7 +6,7 @@ client = continual.Client()
 run_id = os.environ.get("CONTINUAL_RUN_ID", None)
 run = client.runs.create(description="Create and promote model", id=run_id)
 
-model = run.models.create("test-model")
+model = run.models.create(id="test-model", replace_if_exists=True)
 model_version = model.model_versions.create()
 
 accuracy_metric = model_version.metrics.create(id="accuracy", direction="HIGHER")
