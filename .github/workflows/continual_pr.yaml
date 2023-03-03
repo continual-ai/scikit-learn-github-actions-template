@@ -1,9 +1,8 @@
 name: Continual on PR
-on:
-  pull_request
+on: pull_request
 env:
   CONTINUAL_API_KEY: ${{ secrets.CONTINUAL_API_KEY }}
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 permissions:
@@ -16,33 +15,27 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: "3.8"
       - name: Set unique run ID
         run: |
           CONTINUAL_RUN_ID=$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT
           echo "Using run ID $CONTINUAL_RUN_ID"
           echo "CONTINUAL_RUN_ID=$CONTINUAL_RUN_ID" >> $GITHUB_ENV
       - name: Install
-        run: | 
+        run: |
           python -m pip install 'continual>=2.0.0a'
       - name: Verify setup
-        run: | 
-          which continual
-          continual --version
-          continual config show
+        run: |
+          python -c 'import continual; print(continual.Client().version())'
+          python -c 'import continual; print(continual.Client().config.show())'
       - name: Create Continual environment
         run: |
-          continual_environment_id="pr-$GITHUB_PR_NUMBER"
-          create_result=$(continual environments create $continual_environment_id)
-          echo "$create_result"
-          if grep -q "Failed to create environment " <<< "$create_result"; then  
-            if ! grep -q "Resource already exists" <<< "$create_result"; then
-              exit 1;
-            else
-              CONTINUAL_ENVIRONMENT=$continual_environment_id
-            fi
+          continual_environment_id="pr-$GITHUB_PR_NUMBER"         
+          create_result=`python -c "import continual; c = continual.Client(); print(c.projects.get(c.config.project).environments.create(id='$continual_environment_id', replace_if_exists=True).name)"`
+          if ! grep -q "^projects/" <<< "$create_result"; then
+            exit 1;
           else
-            CONTINUAL_ENVIRONMENT=$(echo $create_result | cut -d " " -f 4 | sed -e 's/\.$//')
+            CONTINUAL_ENVIRONMENT=$continual_environment_id
           fi
           echo "Using Continual Environment $CONTINUAL_ENVIRONMENT"
           echo "CONTINUAL_ENVIRONMENT=$CONTINUAL_ENVIRONMENT" >> $GITHUB_ENV
