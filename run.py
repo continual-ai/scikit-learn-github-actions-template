@@ -17,8 +17,7 @@ model.promotions.create(
 	reason="UPLIFT", 
 	improvement_metric="accuracy", 
 	improvement_metric_value=0.8, 
-	base_improvement_metric_value=0.7, 
-	improvement_metric_diff=0.1
+	base_improvement_metric_value=0.7
 )
 
 run.complete()
